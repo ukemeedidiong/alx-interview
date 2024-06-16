@@ -19,7 +19,7 @@ Return True if all boxes can be opened, else return False
 
 | Filename |
 | ------ |
-| [0-lockboxes.py](https://github.com/edward0rtiz/holbertonschool-interview/blob/master/0x00-lockboxes/0-lockboxes.py)|
+| [0-lockboxes.py]
 
 
 ## Additional info :construction:
