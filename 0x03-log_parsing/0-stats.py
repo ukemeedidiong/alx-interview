@@ -3,7 +3,7 @@
 parsing function
 """
 import sys
-
+import signal
 
 counters = {
     "size": 0,
@@ -15,39 +15,50 @@ cntCode = {
     "403": 0, "404": 0, "405": 0, "500": 0
 }
 
-
 def printCodes():
     """
-    function to print the codes and the number of ocurrence
+    Function to print the codes and the number of occurrences
     """
-    # print file size
+    # Print file size
     print("File size: {}".format(counters["size"]))
-    # print all codes
+    # Print all codes
     for key in sorted(cntCode.keys()):
-        # if a val is not 0
+        # If a value is not 0
         if cntCode[key] != 0:
             print("{}: {}".format(key, cntCode[key]))
 
-
 def countCodeSize(listData):
     """
-    count the codes and file size
+    Count the codes and file size
     """
-    # count file size
-    counters["size"] += int(listData[-1])
-    # if exists the code
-    if listData[-2] in cntCode:
-        # count status code
-        cntCode[listData[-2]] += 1
-        # line 10 print
+    # Validate format
+    if len(listData) < 7:
+        return
+    # Validate request format
+    if listData[5] != '"GET' or listData[6] != '/projects/260' or listData[7] != 'HTTP/1.1"':
+        return
+    try:
+        # Count file size
+        counters["size"] += int(listData[-1])
+        # If exists the code
+        if listData[-2] in cntCode:
+            # Count status code
+            cntCode[listData[-2]] += 1
+    except ValueError:
+        pass
 
+def signal_handler(sig, frame):
+    printCodes()
+    sys.exit(0)
+
+signal.signal(signal.SIGINT, signal_handler)
 
 if __name__ == "__main__":
     try:
         for line in sys.stdin:
             try:
                 countCodeSize(line.split(" "))
-            except:
+            except Exception:
                 pass
             if counters["lines"] % 10 == 0:
                 printCodes()
